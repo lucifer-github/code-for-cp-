@@ -1,0 +1,74 @@
+/*
+       ()       ()()()()     ()        ()       ()        ()        ()     
+      ()()      ()     ()    ()()      ()      ()()       ()()      ()     
+     ()  ()     ()      ()   ()  ()    ()     ()  ()      ()  ()    ()     
+    ()()()()    ()      ()   ()    ()  ()    ()()()()     ()    ()  ()     
+   ()      ()   ()     ()    ()      ()()   ()      ()    ()      ()()    
+  ()        ()  ()()()()     ()        ()  ()        ()   ()        ()  
+
+*/
+#include <iostream>
+#include <vector>
+#include <climits>
+#include <set>
+
+using namespace std;
+int changed_by[int(1e5+100)]={0};
+int freeze[(int)1e5+100]={0};
+void path(int n)
+{
+  if( n == 0)
+    return;
+  path(changed_by[n]);
+  cout<<n<<" ";
+}
+
+int main ()
+{
+  ios_base::sync_with_stdio(false); cin.tie(NULL);
+  int64_t dist[(int)1e5+100];
+  set<pair<int,int>> SET;
+  SET.insert({0,1});
+  int n,u,v,value,edge;
+  vector<pair<int,int>> graph[(int)1e5+100];   //in pair first value then vertex
+  cin>>n>>edge;
+  while(edge--)
+  {
+    cin>>u>>v>>value;
+    graph[u].push_back({value,v});
+    graph[v].push_back({value,u});
+  }
+
+  for(int i=2;i<=n;i++)
+     dist[i]=LLONG_MAX;
+  dist[1] = 0;
+  while(SET.size() != 0)
+  {
+
+        int value  = (*SET.begin()).first;
+        int vertex = (*SET.begin()).second;
+        SET.erase(SET.begin());
+        freeze[vertex] = 1;
+        for(int i=0;i<graph[vertex].size();i++)
+        {
+           if (freeze[graph[vertex][i].second] == 0)
+           {if(value+graph[vertex][i].first< dist[graph[vertex][i].second])
+            {
+               SET.erase({dist[graph[vertex][i].second],graph[vertex][i].second});
+               changed_by[graph[vertex][i].second] = vertex;
+               dist[graph[vertex][i].second]=value+graph[vertex][i].first;
+
+               SET.insert({dist[graph[vertex][i].second],graph[vertex][i].second});
+            }
+           }
+        }
+
+  }
+
+  if(changed_by[n] == 0)
+    cout<<"-1";
+  else
+    path(n);
+
+  return 0;
+}
